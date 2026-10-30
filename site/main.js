@@ -98,7 +98,7 @@
     const W = svg.clientWidth || innerWidth, H = svg.clientHeight || innerHeight;
     svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
     /* подложка с запасом: если окно поменяет размер до пересборки, по краям не появится тёмных полос */
-    $$('rect', svg).forEach(r => { r.setAttribute('x', -W); r.setAttribute('y', -H); r.setAttribute('width', W * 3); r.setAttribute('height', H * 3); });
+    $$('rect, mask', svg).forEach(r => { r.setAttribute('x', -W); r.setAttribute('y', -H); r.setAttribute('width', W * 3); r.setAttribute('height', H * 3); });
     word.innerHTML = '';
     const lines = W < 761 ? ['CARUS', 'BREST'] : ['CARUS BREST'];
     const els = lines.map(l => { const t = document.createElementNS(NS, 'text'); t.textContent = l; t.setAttribute('text-anchor', 'middle'); t.setAttribute('font-size', 100); word.appendChild(t); return t; });
@@ -117,7 +117,7 @@
     /* лента наезжает на бетон: под абзацем остаётся ровно отступ секции */
     const ticker = $('.ticker');
     if (ticker) ticker.style.marginTop = -Math.max(0, H - (bottom + (W < 761 ? 32 : 56) + man.offsetHeight) - (W < 761 ? 80 : 140)) + 'px';
-    return { cx: W / 2, cy, fs, H, band: lines.length === 1 ? 3 : 2.4 };
+    return { cx: W / 2, cy, fs, W, H, band: lines.length === 1 ? 3 : 2.4 };
   }
 
   /* формы: штамп «Заявка принята» */
@@ -458,6 +458,13 @@
     .fromTo('.manifest', { autoAlpha: 0, y: 24 }, { autoAlpha: 1, y: 0, duration: .14 }, .74)
     .to({}, { duration: .1 });
   if (fv.isConnected) stageTl.to(fv, { opacity: 1, duration: .2 }, .14);
+  /* при ресайзе во время пина буквы собираются по старому размеру блока — когда размер устоится, пересобираем */
+  if ('ResizeObserver' in window) {
+    let rt = 0;
+    new ResizeObserver(() => { clearTimeout(rt); rt = setTimeout(() => {
+      if (Math.abs(svg.clientWidth - center.W) > 1 || Math.abs(svg.clientHeight - center.H) > 1) ScrollTrigger.refresh();
+    }, 250); }).observe(svg);
+  }
 
   /* бегущая строка: скорость и направление от скролла */
   const track = $('[data-ticker]');
