@@ -1,0 +1,35 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>B — Видео в буквах</title>
+<link rel="stylesheet" href="base.css">
+<style>
+body{background:var(--concrete);color:var(--ink)}
+.nav .brand img{filter:invert(1)}
+.hero{position:relative;height:100vh;min-height:640px;display:flex;flex-direction:column;justify-content:center;padding:96px 40px 40px;background:radial-gradient(120% 80% at 70% 20%,#E4E1DA 0%,var(--concrete) 55%,var(--concrete-2) 100%)}
+canvas{width:100%;display:block}
+.top{display:flex;justify-content:space-between;align-items:end;gap:24px;margin-bottom:18px}
+.top p{font-size:20px;font-weight:600;max-width:420px}
+.top .dline{width:220px}
+.dline i{background:var(--ink)}
+.bottom{display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center;margin-top:24px}
+.ticks{grid-auto-flow:column;gap:28px;font-weight:500}
+.ticks li:before{border-color:#E0A800}
+.btn.ghost{color:var(--ink)}
+@media(max-width:760px){.hero{padding:84px 16px 20px}.top{flex-direction:column;align-items:flex-start}.top p{font-size:17px}.bottom{grid-template-columns:1fr}.ticks{grid-auto-flow:row}}
+</style></head><body>
+<header class="nav"><div class="brand"><img src="../../site/assets/img/cb-shield.svg" alt="">CARUS BREST</div><nav class="links"><a>Как привозим</a><a>Своё СТО</a><a>Привезли</a><a>Контакты</a></nav><div class="right"><a class="hide-m">+375 33 395-99-99</a><a class="btn sm">Консультация</a></div></header>
+<section class="hero">
+<div class="top"><p>Авто из США под ключ — подбор на Copart и IAAI, покупка, доставка в Брест</p><div class="dline"><i></i><i></i></div></div>
+<canvas id="c"></canvas>
+<div class="bottom"><ul class="ticks"><li>Собственное СТО</li><li>Бесплатные консультации</li><li>Официальное оформление</li></ul><a class="btn">Бесплатная консультация</a></div>
+</section>
+<video id="v" src="../../site/assets/video/trx.mp4" autoplay muted loop playsinline style="display:none"></video>
+<script>
+const c=document.getElementById('c'),x=c.getContext('2d'),v=document.getElementById('v');
+function size(){const w=c.clientWidth*devicePixelRatio;c.width=w;c.height=w*(innerWidth<760?0.62:0.34)}
+const word=()=>innerWidth<760?['CARUS','BREST']:['CARUSBREST'];
+function draw(){const W=c.width,H=c.height;x.clearRect(0,0,W,H);const lines=word();x.save();x.fillStyle='#000';x.textBaseline='alphabetic';
+let fs=H/lines.length*1.02;x.font=`900 ${fs}px Unbounded`;let mw=Math.max(...lines.map(l=>x.measureText(l).width));fs*=Math.min(1,W/mw);x.font=`900 ${fs}px Unbounded`;
+lines.forEach((l,i)=>{const w=x.measureText(l).width;x.fillText(l,(W-w)/2,fs*.86*(i+1)+(H-fs*.86*lines.length)/2- fs*.04)});
+x.globalCompositeOperation='source-in';if(v.readyState>1){const r=Math.max(W/v.videoWidth,H/v.videoHeight);const vw=v.videoWidth*r,vh=v.videoHeight*r;x.drawImage(v,(W-vw)/2,(H-vh)/2,vw,vh)}x.restore();requestAnimationFrame(draw)}
+document.fonts.ready.then(()=>{size();draw()});addEventListener('resize',size);
+</script>
+</body></html>

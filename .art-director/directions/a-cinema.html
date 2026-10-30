@@ -1,0 +1,26 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>A — Кино TRX</title>
+<link rel="stylesheet" href="base.css">
+<style>
+.hero{position:relative;height:100vh;min-height:640px;overflow:hidden}
+.hero video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:60% 50%}
+.hero:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.45) 0%,rgba(0,0,0,0) 22%,rgba(0,0,0,0) 45%,rgba(0,0,0,.78) 100%)}
+.copy{position:absolute;left:40px;right:40px;bottom:40px;z-index:2;display:grid;grid-template-columns:1fr 360px;gap:40px;align-items:end}
+h1{font-size:clamp(48px,8.6vw,150px)}
+.sub{display:flex;align-items:center;gap:18px;margin-top:22px}
+.sub .dline{width:min(34vw,420px)}
+.sub span{font-size:20px;font-weight:600;letter-spacing:.02em}
+.card{background:rgba(12,12,13,.72);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.12);border-radius:22px;padding:22px}
+.card h3{font-family:Unbounded;font-weight:700;font-size:18px;line-height:1.15;margin-bottom:14px}
+.card .field{height:52px;border-radius:14px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);display:flex;align-items:center;padding:0 16px;color:var(--muted);margin-bottom:10px}
+.card .btn{width:100%;justify-content:center}
+.card .ticks{margin-top:18px;font-size:15px;color:rgba(255,255,255,.85)}
+.ig{position:absolute;right:40px;top:96px;z-index:2;text-align:right;font-size:14px;color:var(--muted)}
+.ig b{display:block;font-family:Unbounded;font-size:28px;color:#fff}
+@media(max-width:760px){.copy{left:16px;right:16px;bottom:16px;grid-template-columns:1fr;gap:18px}.ig{display:none}.sub span{font-size:16px}.card .ticks{display:none}h1{font-size:15vw}}
+</style></head><body>
+<header class="nav"><div class="brand"><img src="../../site/assets/img/cb-shield.svg" alt="">CARUS BREST</div><nav class="links"><a>Как привозим</a><a>Своё СТО</a><a>Привезли</a><a>Контакты</a></nav><div class="right"><a class="hide-m">+375 33 395-99-99</a><a class="btn sm">Консультация</a></div></header>
+<section class="hero"><video src="../../site/assets/video/trx.mp4" autoplay muted loop playsinline poster="../../site/assets/img/trx-poster.jpg"></video>
+<div class="ig"><b>12,2 тыс.</b>подписчиков в Instagram</div>
+<div class="copy"><div><h1 class="display">Авто<br>из США</h1><div class="sub"><div class="dline"><i></i><i></i></div><span>Подбор • Покупка • Доставка в Брест</span></div></div>
+<div class="card"><h3>Бесплатная консультация по вашей машине</h3><div class="field">Какую машину ищете?</div><div class="field">+375 __ ___-__-__</div><a class="btn">Получить консультацию</a><ul class="ticks"><li>Собственное СТО</li><li>Официальное оформление</li><li>Полное сопровождение</li></ul></div></div></section>
+</body></html>

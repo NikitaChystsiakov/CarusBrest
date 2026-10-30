@@ -1,0 +1,5 @@
+.DS_Store
+.playwright-mcp/
+Carsify.by*
+# исходники (рилсы, генерации) — тяжёлые, r03.mp4 больше лимита GitHub
+.art-director/materials/
