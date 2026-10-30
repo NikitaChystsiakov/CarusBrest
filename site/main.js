@@ -261,7 +261,9 @@
     fetch('assets/globe-dots.json').then(r => r.json()).then(d => {
       dots = d.map(([lo, la]) => [lo * RAD, la * RAD, Math.sin(la * RAD), Math.cos(la * RAD)]); draw();
     }).catch(() => {});
-    addEventListener('resize', size); size();
+    // закреплённый ScrollTrigger меняет размер холста уже после resize окна — следим за самим холстом
+    if ('ResizeObserver' in window) new ResizeObserver(size).observe(cv); else addEventListener('resize', size);
+    size();
     return { st, draw, proj, at, route, USA, POTI };
   })();
 
