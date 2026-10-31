@@ -34,7 +34,6 @@
     if (!el) return;
     e.preventDefault();
     root.classList.remove('is-menu'); document.body.style.overflow = ''; lenis && lenis.start();
-    $$('[data-menu]').forEach(m => m.classList.remove('is-open'));
     lenis ? lenis.scrollTo(el, { offset: id === '#top' ? 0 : -60 }) : el.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth' });
   }));
 
@@ -131,22 +130,11 @@
   }));
   $$('input[name="phone"]').forEach(i => i.addEventListener('input', () => i.classList.remove('is-err')));
 
-  /* шапка: выпадающие меню, мобильное меню, страницы «в следующем этапе» */
-  const menus = $$('[data-menu]');
-  const closeMenus = except => menus.forEach(m => { if (m !== except) { m.classList.remove('is-open'); $('button', m).setAttribute('aria-expanded', 'false'); } });
-  menus.forEach(m => {
-    const btn = $('button', m);
-    let t = null;
-    const open = () => { clearTimeout(t); closeMenus(m); m.classList.add('is-open'); btn.setAttribute('aria-expanded', 'true'); };
-    const close = () => { t = setTimeout(() => { m.classList.remove('is-open'); btn.setAttribute('aria-expanded', 'false'); }, 160); };
-    btn.addEventListener('click', () => m.classList.contains('is-open') ? (m.classList.remove('is-open'), btn.setAttribute('aria-expanded', 'false')) : open());
-    if (finePointer) { m.addEventListener('pointerenter', open); m.addEventListener('pointerleave', close); }
-  });
-  document.addEventListener('click', e => { if (!e.target.closest('[data-menu]')) closeMenus(); });
+  /* шапка: мобильное меню, страницы «в следующем этапе» */
   const burger = $('[data-burger]'), mnav = $('[data-mnav]');
   const setMenu = on => { root.classList.toggle('is-menu', on); burger.setAttribute('aria-expanded', on); mnav.setAttribute('aria-hidden', !on); lenis && (on ? lenis.stop() : lenis.start()); document.body.style.overflow = on ? 'hidden' : ''; };
   burger.addEventListener('click', () => setMenu(!root.classList.contains('is-menu')));
-  addEventListener('keydown', e => { if (e.key === 'Escape') { closeMenus(); setMenu(false); } });
+  addEventListener('keydown', e => { if (e.key === 'Escape') setMenu(false); });
   const toast = $('[data-toast]');
   let toastT = null;
   $$('[data-soon]').forEach(a => a.addEventListener('click', e => {
@@ -155,20 +143,29 @@
     toast.classList.add('is-on'); clearTimeout(toastT); toastT = setTimeout(() => toast.classList.remove('is-on'), 2600);
   }));
 
-  /* СТО: при скролле по списку работ меняется видео слева */
-  const works = $$('[data-work-item]'), workMedia = $$('.works__media [data-work]'), workCount = $('[data-works-count]');
-  const setWork = i => {
-    works.forEach((w, n) => w.classList.toggle('is-on', n === i));
-    workMedia.forEach((m, n) => {
-      m.classList.toggle('is-on', n === i);
-      if (m.tagName !== 'VIDEO' || reduce) return;
-      if (n === i) { if (m.preload !== 'auto') { m.preload = 'auto'; m.load(); } m.play().catch(() => {}); } else m.pause();
-    });
-    workCount.textContent = `0${i + 1} / 0${works.length}`;
-  };
-  if ('IntersectionObserver' in window) {
-    const wio = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) setWork(+e.target.dataset.workItem); }), { rootMargin: desktop.matches ? '-48% 0px -48% 0px' : '-60% 0px -34% 0px' });
-    works.forEach(w => wio.observe(w));
+  /* СТО: активен последний пункт, чей верх прошёл середину экрана, — всегда ровно один; слева его кадр.
+     Новый кадр проявляется поверх прошлого, а прошлый держится под ним, чтобы между ними не мигал чёрный фон */
+  const worksBox = $('[data-works]');
+  if (worksBox) {
+    const works = $$('[data-work-item]', worksBox), imgs = $$('.works__media [data-work]', worksBox), bars = $$('.works__bar i', worksBox), count = $('[data-works-count]', worksBox);
+    let on = 0, near = false, wraf = 0;
+    const setWork = i => {
+      if (i === on) return;
+      imgs.forEach((m, n) => { m.classList.toggle('is-prev', n === on); m.classList.toggle('is-on', n === i); });
+      works.forEach((w, n) => w.classList.toggle('is-on', n === i));
+      bars.forEach((b, n) => b.classList.toggle('is-on', n <= i));
+      count.textContent = `0${i + 1} / 0${works.length}`;
+      on = i;
+    };
+    const pick = () => {
+      wraf = 0;
+      const line = innerHeight * .55; let i = 0;
+      works.forEach((w, n) => { if (w.getBoundingClientRect().top <= line) i = n; });
+      setWork(i);
+    };
+    addEventListener('scroll', () => { if (near && !wraf) wraf = requestAnimationFrame(pick); }, { passive: true });
+    if ('IntersectionObserver' in window) new IntersectionObserver(([e]) => { near = e.isIntersecting; if (near) pick(); }).observe(worksBox);
+    else { near = true; pick(); }
   }
 
   /* глобус: стилизованная Земля из точек, морской путь США → Поти */
@@ -436,9 +433,14 @@
   } else heroIn.play();
 
   /* первый экран → видео уходит в буквы CARUS BREST; в буквах — TRX мордой в кадр */
+  /* ролик для букв грузим заранее, пока человек смотрит первый экран, — а не в момент первого скролла */
+  const warmFront = () => { if (fv.isConnected && fv.preload !== 'auto') { fv.preload = 'auto'; fv.load(); } };
+  const idle = window.requestIdleCallback || (f => setTimeout(f, 1));
+  addEventListener('load', () => setTimeout(() => idle(warmFront), 1200), { once: true });
   let center = buildLetters();
   const zoom = { s: 9 };
-  const setZoom = () => word.setAttribute('transform', `translate(${center.cx} ${center.cy}) scale(${zoom.s}) translate(${-center.cx} ${-center.cy})`);
+  /* зум — CSS-трансформом всего svg: его масштабирует видеокарта, маска не перерисовывается на каждом кадре */
+  const setZoom = () => { svg.style.transformOrigin = `${center.cx}px ${center.cy}px`; svg.style.transform = `scale(${zoom.s})`; };
   setZoom();
   const media = $('[data-media]');
   const bandH = () => center.fs * center.band;
@@ -446,7 +448,7 @@
     defaults: { ease: 'none' },
     scrollTrigger: { trigger: '.stage', start: 'top top', end: () => '+=' + innerHeight * (desktop.matches ? 0.9 : 0.7), pin: true, scrub: .6, invalidateOnRefresh: true,
       onRefreshInit: () => { center = buildLetters(); setZoom(); },
-      onEnter: () => { if (fv.isConnected && fv.preload !== 'auto') { fv.preload = 'auto'; fv.load(); fv.play().catch(() => {}); } } }
+      onEnter: () => { warmFront(); fv.isConnected && fv.play().catch(() => {}); } }
   });
   stageTl
     .to('.hero', { autoAlpha: 0, y: -60, duration: .24 }, 0)

@@ -29,35 +29,12 @@
 <header class="top" data-top>
   <a class="top__brand" href="#top" aria-label="CarusBrest, на главную"><img src="assets/img/cb-shield.svg" alt="" width="40" height="29"><span>CARUS BREST</span></a>
   <nav class="top__nav" aria-label="Основное меню">
-    <div class="nav-item" data-menu>
-      <button class="nav-item__btn" type="button" aria-expanded="false" aria-controls="mm-usa">Авто из США <svg viewBox="0 0 12 8" aria-hidden="true"><path d="M1 1.5 6 6.5 11 1.5"/></svg></button>
-      <div class="mega" id="mm-usa">
-        <div class="mega__links">
-          <a href="#route"><b>Как привозим</b><span>Путь машины от аукциона до Бреста</span></a>
-          <a href="#soon" data-soon><b>Подбор на Copart и IAAI</b><span>Ищем и проверяем лот под ваш бюджет</span></a>
-          <a href="#soon" data-soon><b>Доставка и растаможка</b><span>Море через Поти, автовоз, официальное оформление</span></a>
-          <a href="#lead"><b>Расчёт стоимости</b><span>Бесплатная консультация по вашей машине</span></a>
-        </div>
-        <a class="mega__card" href="#route"><img src="assets/img/gen-auction.webp" alt="" loading="lazy"><span>Путь машины из США в Брест →</span></a>
-        <a class="mega__card" href="#cars"><img src="assets/img/r09.jpg" alt="" loading="lazy" style="object-position:50% 30%"><span>Что мы уже привезли →</span></a>
-      </div>
-    </div>
-    <div class="nav-item" data-menu>
-      <button class="nav-item__btn" type="button" aria-expanded="false" aria-controls="mm-sto">Своё СТО <svg viewBox="0 0 12 8" aria-hidden="true"><path d="M1 1.5 6 6.5 11 1.5"/></svg></button>
-      <div class="mega" id="mm-sto">
-        <div class="mega__links">
-          <a href="#sto"><b>Ремонт после аукциона</b><span>Геометрия кузова на стапеле</span></a>
-          <a href="#soon" data-soon><b>Кузовной ремонт</b><span>Сварка, замена элементов, подготовка</span></a>
-          <a href="#soon" data-soon><b>Диагностика и обслуживание</b><span>Подъёмники, ходовая, ТО</span></a>
-          <a href="#soon" data-soon><b>Сход-развал</b><span>Настройка на стенде</span></a>
-        </div>
-        <a class="mega__card" href="#sto"><img src="assets/img/sto-lift.jpg" alt="" loading="lazy"><span>Наше СТО в Бресте →</span></a>
-        <a class="mega__card" href="#sto"><img src="assets/img/sto-stapel-poster.jpg" alt="" loading="lazy" style="object-position:50% 40%"><span>Ремонт после аукциона →</span></a>
-      </div>
-    </div>
+    <!-- пока нет отдельных страниц, первые три пункта ведут к разделам главной; «О нас» и «Контакты» — будущие страницы -->
+    <a class="nav-link" href="#route">Авто из США</a>
+    <a class="nav-link" href="#sto">СТО</a>
     <a class="nav-link" href="#cars">Привезли</a>
-    <a class="nav-link" href="#culture">О нас</a>
-    <a class="nav-link" href="#contacts">Контакты</a>
+    <a class="nav-link" href="about.html" data-soon>О нас</a>
+    <a class="nav-link" href="contacts.html" data-soon>Контакты</a>
   </nav>
   <a class="top__tel" href="tel:+375333959999">+375 33 395-99-99</a>
   <a class="top__ig" href="https://www.instagram.com/carusbrest/" target="_blank" rel="noopener" aria-label="Instagram @carusbrest"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.3" cy="6.7" r="1"/></svg></a>
@@ -68,11 +45,11 @@
 
 <div class="mnav" id="mnav" data-mnav aria-hidden="true">
   <nav class="mnav__list" aria-label="Меню">
-    <details><summary>Авто из США</summary><a href="#route">Как привозим</a><a href="#soon" data-soon>Подбор на Copart и IAAI</a><a href="#soon" data-soon>Доставка и растаможка</a><a href="#lead">Расчёт стоимости</a></details>
-    <details><summary>Своё СТО</summary><a href="#sto">Ремонт после аукциона</a><a href="#soon" data-soon>Кузовной ремонт</a><a href="#soon" data-soon>Диагностика и обслуживание</a><a href="#soon" data-soon>Сход-развал</a></details>
+    <a class="mnav__top" href="#route">Авто из США</a>
+    <a class="mnav__top" href="#sto">СТО</a>
     <a class="mnav__top" href="#cars">Привезли</a>
-    <a class="mnav__top" href="#culture">О нас</a>
-    <a class="mnav__top" href="#contacts">Контакты</a>
+    <a class="mnav__top" href="about.html" data-soon>О нас</a>
+    <a class="mnav__top" href="contacts.html" data-soon>Контакты</a>
   </nav>
   <div class="mnav__foot">
     <a class="mnav__tel display" href="tel:+375333959999">+375 33 395-99-99</a>
@@ -249,17 +226,18 @@
 
   <div class="works" data-works>
     <div class="works__media" aria-hidden="true">
-      <video data-work="0" muted loop playsinline preload="none" poster="assets/img/sto-stapel-poster.jpg" class="is-on"><source src="assets/video/sto-stapel.mp4" type="video/mp4"></video>
-      <video data-work="1" muted loop playsinline preload="none" poster="assets/img/sto-sparks-poster.jpg"><source src="assets/video/sto-sparks.mp4" type="video/mp4"></video>
-      <video data-work="2" muted loop playsinline preload="none" poster="assets/img/sto-lift-poster.jpg"><source src="assets/video/sto-lift.mp4" type="video/mp4"></video>
-      <img data-work="3" src="assets/img/sto-m3.jpg" alt="">
+      <img data-work="0" src="assets/img/sto-work-stapel.webp" alt="" class="is-on">
+      <img data-work="1" src="assets/img/sto-work-body.webp" alt="">
+      <img data-work="2" src="assets/img/sto-work-lift.webp" alt="">
+      <img data-work="3" src="assets/img/sto-work-align.webp" alt="">
+      <span class="works__bar"><i class="is-on"></i><i></i><i></i><i></i></span>
       <span class="works__count" data-works-count>01 / 04</span>
     </div>
     <ol class="works__list">
-      <li class="work is-on" data-work-item="0"><h3 class="display">Ремонт после аукциона</h3><p>Восстанавливаем геометрию кузова на&nbsp;стапеле — так, как машина вышла с&nbsp;завода.</p></li>
-      <li class="work" data-work-item="1"><h3 class="display">Кузовной ремонт</h3><p>Сварка, замена и&nbsp;подготовка элементов — без поездок по&nbsp;чужим сервисам.</p></li>
-      <li class="work" data-work-item="2"><h3 class="display">Диагностика и&nbsp;обслуживание</h3><p>Подъёмники, ходовая, плановое ТО — до&nbsp;того, как машина уедет к&nbsp;вам.</p></li>
-      <li class="work" data-work-item="3"><h3 class="display">Сход-развал</h3><p>Настраиваем на&nbsp;стенде, чтобы машина ехала ровно с&nbsp;первого километра.</p></li>
+      <li class="work is-on" data-work-item="0"><img class="work__img" src="assets/img/sto-work-stapel.webp" alt="Мастер выставляет раму пикапа на стапеле" loading="lazy"><span class="work__n">01</span><h3 class="display">Ремонт после аукциона</h3><p>Восстанавливаем геометрию кузова на&nbsp;стапеле — так, как машина вышла с&nbsp;завода.</p></li>
+      <li class="work" data-work-item="1"><img class="work__img" src="assets/img/sto-work-body.webp" alt="Мастер зачищает кузовной элемент болгаркой" loading="lazy"><span class="work__n">02</span><h3 class="display">Кузовной ремонт</h3><p>Сварка, замена и&nbsp;подготовка элементов — без поездок по&nbsp;чужим сервисам.</p></li>
+      <li class="work" data-work-item="2"><img class="work__img" src="assets/img/sto-work-lift.webp" alt="RAM на подъёмнике, под ним снятая подвеска" loading="lazy"><span class="work__n">03</span><h3 class="display">Диагностика и&nbsp;обслуживание</h3><p>Подъёмники, ходовая, плановое ТО — до&nbsp;того, как машина уедет к&nbsp;вам.</p></li>
+      <li class="work" data-work-item="3"><img class="work__img" src="assets/img/sto-work-align.webp" alt="BMW M3 на стенде сход-развала" loading="lazy"><span class="work__n">04</span><h3 class="display">Сход-развал</h3><p>Настраиваем на&nbsp;стенде, чтобы машина ехала ровно с&nbsp;первого километра.</p></li>
     </ol>
   </div>
 </section>
@@ -357,7 +335,7 @@
       <div class="foot__btns"><a class="btn" href="https://www.instagram.com/carusbrest/" target="_blank" rel="noopener"><span class="roll" data-text="Написать в Instagram">Написать в Instagram</span></a><a class="btn btn--line" href="tel:+375333959999"><span class="roll" data-text="Позвонить">Позвонить</span></a></div>
     </div>
     <div class="foot__links"><a href="https://www.instagram.com/carusbrest/" target="_blank" rel="noopener">Instagram @carusbrest</a><a href="https://www.youtube.com/c/CARusBREST" target="_blank" rel="noopener">YouTube CARUS AUTO</a></div>
-    <div class="foot__links"><a href="#route">Как привозим</a><a href="#why">Почему мы</a><a href="#cars">Привезли</a><a href="#lead">Заявка</a></div>
+    <div class="foot__links"><a href="#route">Авто из США</a><a href="#sto">СТО</a><a href="#cars">Привезли</a><a href="about.html" data-soon>О нас</a><a href="contacts.html" data-soon>Контакты</a></div>
   </div>
   <p class="foot__note">Демо-концепция сайта на&nbsp;материалах из&nbsp;Instagram @carusbrest.</p>
 </footer>
