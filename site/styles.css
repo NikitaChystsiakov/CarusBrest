@@ -16,7 +16,7 @@ button,input{font:inherit;color:inherit}
 .skip{position:fixed;left:16px;top:-60px;z-index:200;background:var(--yellow);color:var(--ink);padding:10px 16px;border-radius:10px}
 .skip:focus{top:16px}
 :focus-visible{outline:3px solid var(--yellow);outline-offset:3px}
-.display{font-family:'Unbounded',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:-.02em;line-height:.94}
+.display{font-family:'Unbounded',sans-serif;font-weight:800;text-transform:uppercase;letter-spacing:-.02em;line-height:.94;overflow-wrap:break-word}
 .h2{font-size:clamp(36px,5.2vw,84px)}
 
 /* buttons */
@@ -57,15 +57,15 @@ button,input{font:inherit;color:inherit}
 .top__call{display:none}
 
 /* stage: hero + letters */
-.stage{position:relative;background:var(--ink)}
-.stage__pin{position:relative;height:100vh;height:100svh;min-height:620px;overflow:hidden;background:var(--ink)}
+.stage{--run:90vh;position:relative;background:var(--ink);height:calc(100vh + var(--run));height:calc(100svh + var(--run))}
+@supports (height:1svh){.stage{--run:90svh}}
+/* блок держит CSS sticky, длина прогона анимации — --run */
+.stage__pin{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;background:var(--ink)}
 .stage__media{position:absolute;left:0;right:0;top:0;height:100%;overflow:hidden}
 .stage__media video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:62% 50%}
 .stage__front{opacity:0;object-position:50% 56%!important;transform:scale(1.45);transform-origin:50% 56%}
 .stage__shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.5) 0%,rgba(0,0,0,0) 24%,rgba(0,0,0,0) 42%,rgba(0,0,0,.8) 100%)}
 .letters{position:absolute;inset:0;width:100%;height:100%;opacity:0;pointer-events:none;will-change:transform,opacity}
-.letters__fill{fill:var(--concrete)}
-.letters__word text{font-family:Unbounded;font-weight:900;text-transform:uppercase;letter-spacing:-.02em}
 .hero{position:absolute;inset:0;z-index:2;padding:0 var(--pad) 40px;display:grid;grid-template-columns:1fr 372px;align-items:end;gap:40px}
 .hero__ig{position:absolute;right:var(--pad);top:96px;display:flex;align-items:center;gap:14px;text-decoration:none;color:var(--white)}
 .odo{display:inline-flex;font-family:Unbounded;font-weight:800;font-size:56px;line-height:1;height:1em;overflow:hidden}
@@ -75,7 +75,7 @@ button,input{font:inherit;color:inherit}
 .hero__ig-txt b{display:block;color:var(--yellow);font-weight:600;margin-top:2px}
 .hero__quote{display:inline-block;margin-bottom:18px;font-family:Unbounded;font-weight:700;font-size:13px;background:#fff;color:var(--ink);padding:7px 11px;border-radius:8px;transform:rotate(-2deg)}
 .hero__quote span{font-family:'Golos Text';font-weight:500;opacity:.6}
-.hero__title{font-size:clamp(56px,9.4vw,164px)}
+.hero__title{font-size:clamp(44px,min(9.4vw,17svh),164px)}
 .hero__title .w{display:block;overflow:hidden;padding-bottom:.04em}
 .hero__title .w>span{display:block}
 .hero__sub{display:flex;align-items:center;gap:18px;margin-top:24px}
@@ -122,15 +122,15 @@ button,input{font:inherit;color:inherit}
 .toast.is-on{opacity:1;transform:translate(-50%,0)}
 
 /* journey: глобус */
-.journey{position:relative;background:var(--ink)}
-.journey__pin{position:relative;height:100vh;height:100svh;overflow:hidden;background:radial-gradient(120% 90% at 50% 55%,#15171c 0%,var(--ink) 62%)}
+.journey{--run:460vh;position:relative;background:var(--ink);height:calc(100vh + var(--run));height:calc(100svh + var(--run))}
+@supports (height:1svh){.journey{--run:460svh}}
+.journey__pin{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;background:radial-gradient(120% 90% at 50% 55%,#15171c 0%,var(--ink) 62%)}
 .globe{position:absolute;inset:0;width:100%;height:100%}
 .jhead{position:absolute;left:var(--pad);top:120px;z-index:2;max-width:460px;opacity:0}
-.jhead .h2{font-size:clamp(44px,5.4vw,92px)}
+.jhead .h2{font-size:clamp(32px,min(5.4vw,10svh),92px)}
 .jhead p{margin-top:16px;font-size:18px;color:rgba(255,255,255,.8);max-width:360px}
 .jlabels{list-style:none;position:absolute;inset:0;pointer-events:none;z-index:2}
-.jlabels li{position:absolute;left:0;top:0;font-family:Unbounded;font-weight:700;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:#fff;background:rgba(11,11,12,.7);border:1px solid rgba(255,255,255,.18);padding:6px 10px;border-radius:8px;white-space:nowrap;opacity:0;transform:translate(-50%,-160%)}
-.jlabels li.is-below{transform:translate(-50%,70%)}
+.jlabels li{position:absolute;left:0;top:0;will-change:transform,opacity;font-family:Unbounded;font-weight:700;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:#fff;background:rgba(11,11,12,.7);border:1px solid rgba(255,255,255,.18);padding:6px 10px;border-radius:8px;white-space:nowrap;opacity:0;transform:translate(-50%,-160%)}
 .jstage{position:absolute;inset:0;z-index:3;margin:0;overflow:hidden;will-change:clip-path}
 .jstage img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .jstage:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.72) 0%,rgba(0,0,0,.25) 45%,rgba(0,0,0,0) 70%)}
@@ -176,7 +176,8 @@ button,input{font:inherit;color:inherit}
 .sto-sec__head{display:grid;grid-template-columns:auto 1fr;gap:48px;align-items:end;margin-bottom:64px}
 .sto-sec__title{font-size:clamp(64px,11vw,184px);line-height:.86}
 .sto-sec__head p{font-size:clamp(18px,1.6vw,23px);font-weight:500;line-height:1.4;max-width:520px;padding-bottom:10px}
-.drag{background:var(--ink);color:#fff;border-radius:28px;padding:30px 30px 34px;margin-bottom:var(--sec)}
+.drag-run{margin-bottom:var(--sec)}
+.drag{position:sticky;top:80px;background:var(--ink);color:#fff;border-radius:28px;padding:30px 30px 34px}
 .drag__top{display:flex;justify-content:space-between;align-items:center;gap:24px;margin-bottom:26px}
 .drag__q{font-size:clamp(22px,2.4vw,34px);line-height:1}
 .tree{display:flex;gap:8px;padding:8px 10px;border-radius:999px;background:#000}
@@ -189,9 +190,9 @@ button,input{font:inherit;color:inherit}
 .lane--fast .lane__name{color:var(--yellow)}
 .lane__track{position:relative;height:74px;border-radius:14px;background:#1a1b1e;background-image:repeating-linear-gradient(90deg,rgba(255,255,255,.35) 0 22px,transparent 22px 44px);background-size:100% 2px;background-repeat:no-repeat;background-position:0 50%}
 .gate{position:absolute;left:var(--at);top:-8px;bottom:-8px;width:3px;background:rgba(255,255,255,.18)}
-.gate b{position:absolute;left:50%;top:-30px;transform:translateX(-50%) rotate(-2deg);white-space:nowrap;font-family:Unbounded;font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.04em;background:#fff;color:var(--ink);padding:5px 8px;border-radius:7px;opacity:.6;transition:opacity .3s,background .3s,transform .3s}
+.gate b{--tx:-50%;position:absolute;left:50%;top:-30px;transform:translateX(var(--tx)) rotate(-2deg);white-space:nowrap;font-family:Unbounded;font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.04em;background:#fff;color:var(--ink);padding:5px 8px;border-radius:7px;opacity:.6;transition:opacity .3s,background .3s,transform .3s}
 .gate.is-hit{background:#ff6b57}
-.gate.is-hit b{opacity:1;background:#ff6b57;color:#fff;transform:translateX(-50%) rotate(-2deg) scale(1.06)}
+.gate.is-hit b{opacity:1;background:#ff6b57;color:#fff;transform:translateX(var(--tx)) rotate(-2deg) scale(1.06)}
 .gate--own{background:rgba(255,198,41,.5)}
 .gate--own.is-hit{background:var(--yellow)}
 .gate--own.is-hit b{background:var(--yellow);color:var(--ink)}
@@ -316,6 +317,8 @@ button,input{font:inherit;color:inherit}
 .no-motion .jstage--poti{clip-path:none;position:relative;height:100vh}
 .no-motion .road__mid i{transform:none}
 .no-motion .stage__front{display:none}
+.no-motion .stage,.no-motion .journey,.no-motion .drag-run{height:auto!important}
+.no-motion .stage__pin,.no-motion .journey__pin,.no-motion .drag{position:relative;top:auto!important}
 
 @media (max-width:1100px){
   .top__nav{display:none}
@@ -340,14 +343,35 @@ button,input{font:inherit;color:inherit}
   .road__car{left:calc(50% - 26px);width:40px;margin:-41px 0 0 -20px}
   .stop{width:auto;margin-left:160px}
   .stop:after{display:none}
+  .hero__sub .dline{width:80px}
+  .sto-sec__head{grid-template-columns:minmax(0,1fr);gap:20px}
+  /* заезд: имя полосы над дорожкой, средняя подпись — под ней, чтобы подписи не наезжали */
+  .lane{grid-template-columns:minmax(0,1fr);gap:34px}
+  .lane--slow .gate:nth-of-type(2) b{top:auto;bottom:-30px}
+  .lane--slow{padding-bottom:32px}
+  .quotes{position:relative;right:auto;top:auto;width:auto;justify-items:start;margin-top:28px}
+  .quote--tilt{margin-right:0;margin-left:20px}
+  .lead{grid-template-columns:minmax(0,1fr);gap:36px}
+  .lead__head{position:static}
+}
+/* низкий экран на десктопной сетке: убираем второстепенное из формы первого экрана */
+@media (min-width:761px) and (max-height:760px){
+  .quick__car,.quick .ticks{display:none}
+  .quick__title{margin-bottom:10px}
+  .hero__ig{top:84px}
+  .hero__quote{display:none}
 }
 @media (max-width:760px){
   .top__ig{display:none}
   .top__burger{margin-left:0}
+  .stage{--run:70vh}
+  .journey{--run:400vh}
+  @supports (height:1svh){.stage{--run:70svh}.journey{--run:400svh}}
   .journey__pin{background:var(--ink)}
   .jhead{top:88px;right:16px}
   .jhead p{font-size:15px}
-  .jstage__copy{right:16px;bottom:9vh}
+  .jstage__copy{right:16px;bottom:max(9vh,96px)}
+  .jstage__copy h3{font-size:min(40px,11.5vw)}
   .jstage:after{background:linear-gradient(0deg,rgba(0,0,0,.8) 0%,rgba(0,0,0,.2) 55%,rgba(0,0,0,0) 80%)}
   .jstage img{object-position:68% 50%}
   .jstage--poti img{object-position:86% 50%}
@@ -360,23 +384,26 @@ button,input{font:inherit;color:inherit}
   .road__stops{gap:56px}
   .stop{margin-left:100px}
   .stop h3{font-size:20px}
-  .sto-sec__head{grid-template-columns:1fr;gap:16px;margin-bottom:36px}
+  .sto-sec__head{gap:16px;margin-bottom:36px}
+  .sto-sec__title{font-size:clamp(40px,16.5vw,64px)}
   .drag{padding:20px 16px 22px;border-radius:22px}
   .drag__top{margin-bottom:34px}
-  .lane{grid-template-columns:1fr;gap:34px}
   .lane__name{font-size:14px}
   .lane__track{height:58px}
   .car{width:78px}
   .gate b{font-size:10px;top:-26px}
-  .lane--slow .gate:nth-of-type(2) b{top:auto;bottom:-26px}
+  .lane--slow .gate:nth-of-type(2) b{bottom:-26px}
   .lane--slow{padding-bottom:28px}
+  /* правая подпись начинается от шлагбаума и уходит вправо — не наезжает на левую */
+  .lane--slow .gate:nth-of-type(3) b{--tx:-10px}
+  .drag__top{flex-wrap:wrap;gap:12px}
   .lane__stamp{font-size:11px;right:116px;padding:4px 7px;border-width:2px}
   .lane__note{font-size:12px;right:28px}
   .liftshot{margin-bottom:56px}
   .liftshot figcaption{gap:10px;margin-bottom:16px}
   .liftshot__media{aspect-ratio:4/3}
   /* на телефоне у каждого пункта свой кадр — без липкой картинки и подсветки по скроллу */
-  .works{grid-template-columns:1fr;gap:0}
+  .works{grid-template-columns:minmax(0,1fr);gap:0}
   .works__media{display:none}
   .works__list{padding:0}
   .work{padding:24px 0 28px}
@@ -385,13 +412,13 @@ button,input{font:inherit;color:inherit}
   .work__n{margin-bottom:12px}
   .work .work__n{background:var(--ink);color:var(--yellow)}
   .work h3,.work p{color:var(--ink)}
-  .work h3{font-size:24px}
+  .work h3{font-size:min(24px,7.2vw)}
   .work p{font-size:16px}
   :root{--pad:16px;--sec:80px;--r:18px}
   body{font-size:16px}
   .hide-m{display:none}
   .top{padding:12px 16px;gap:12px}
-  .top__brand span{font-size:13px}
+  .top__brand span{font-size:13px;white-space:nowrap}
   .top__brand img{width:34px}
   .top__tel,.top__cta{display:none}
   .top__call{display:grid;place-items:center;margin-left:auto;width:40px;height:40px;border-radius:50%;box-shadow:inset 0 0 0 1.5px #fff}
@@ -404,7 +431,7 @@ button,input{font:inherit;color:inherit}
   .hero__ig-txt{font-size:12px;max-width:110px}
   .odo{font-size:30px}
   .hero__quote{display:none}
-  .hero__title{font-size:15.5vw}
+  .hero__title{font-size:min(15.5vw,9svh)}
   .hero__sub{margin-top:14px;gap:12px}
   .hero__sub .dline{width:56px}
   .hero__sub p{font-size:15px}
@@ -414,6 +441,10 @@ button,input{font:inherit;color:inherit}
   .quick .field input{height:48px}
   .quick .btn{height:48px}
   .manifest__txt{font-size:18px}
+  /* заголовки и телефоны тянутся по ширине экрана — при увеличенном тексте не вылезают за край */
+  .h2,.culture__copy .h2{font-size:clamp(24px,9.6vw,40px)}
+  .lead__tel{font-size:clamp(18px,7vw,28px)}
+  .foot__tel{font-size:clamp(18px,7vw,24px);white-space:nowrap}
   .ticker{padding:13px 0}
   .wall__col{padding-bottom:40px}
   .wall__col--down{margin-top:40px;padding-bottom:0}
@@ -433,7 +464,7 @@ button,input{font:inherit;color:inherit}
   .quotes{position:relative;right:auto;top:auto;width:auto;justify-items:start;margin-top:28px}
   .quote--tilt{margin-right:0;margin-left:20px}
   .quote--main blockquote{font-size:18px}
-  .lead{grid-template-columns:1fr;gap:28px}
+  .lead{gap:28px}
   .lead__head{position:static}
   .lead__alt{margin-top:24px}
   .form{padding:20px;border-radius:22px}
@@ -509,6 +540,21 @@ button,input{font:inherit;color:inherit}
   .stories__acts .btn{flex:1}
   .stories__ig{display:grid;place-items:center;padding:0 18px;border-radius:14px;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.5);color:#fff;text-decoration:none;font-weight:700}
   .is-locked{overflow:hidden}
+}
+@media (max-width:380px){
+  .top__brand span{display:none}
+  .road__strip{width:52px}
+  .road__edge--l{left:5px}.road__edge--r{right:5px}
+  .road__car{left:calc(50% - 11px);width:18px;margin:-19px 0 0 -9px}
+  .stop{margin-left:64px}
+  .stop h3{font-size:16px}
+  .drag__q{font-size:19px}
+  .drag__top{margin-bottom:28px}
+  .gate b{font-size:9px;padding:4px 6px}
+  /* штамп «Ключи у вас» уходит под дорожку: рядом с машиной ему не хватает места */
+  .lane--fast{padding-bottom:34px}
+  .lane__stamp{top:auto;bottom:-6px;right:24px;transform:translateY(100%) rotate(-4deg) scale(1.6)}
+  .lane__stamp.is-on{transform:translateY(100%) rotate(-4deg) scale(1)}
 }
 @media (prefers-reduced-motion:reduce){
   *{transition:none!important;animation:none!important}

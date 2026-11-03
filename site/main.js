@@ -89,27 +89,29 @@
     gsap.fromTo(inner, { y: 0 }, { y: `-${steps}em`, duration: 1.6 + i * 0.25, ease: 'power3.inOut' });
   });
 
-  /* буквы CARUS BREST, внутри которых видео */
-  const svg = $('[data-letters]');
-  const word = $('.letters__word', svg);
-  const NS = 'http://www.w3.org/2000/svg';
+  /* буквы CARUS BREST, внутри которых видео: бетон с прорезями букв рисуется на холсте один раз под размер экрана,
+     дальше холст только масштабирует видеокарта — ни Safari, ни Chrome не перерисовывают его на каждом кадре скролла */
+  const letters = $('[data-letters]');
+  const lctx = letters.getContext('2d');
+  const concrete = getComputedStyle(root).getPropertyValue('--concrete').trim() || '#D8D5CE';
   function buildLetters() {
-    const W = svg.clientWidth || innerWidth, H = svg.clientHeight || innerHeight;
-    svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
-    /* подложка с запасом: если окно поменяет размер до пересборки, по краям не появится тёмных полос */
-    $$('rect, mask', svg).forEach(r => { r.setAttribute('x', -W); r.setAttribute('y', -H); r.setAttribute('width', W * 3); r.setAttribute('height', H * 3); });
-    word.innerHTML = '';
+    const W = letters.clientWidth || innerWidth, H = letters.clientHeight || innerHeight;
+    const dpr = Math.min(3, devicePixelRatio || 1);
+    letters.width = Math.round(W * dpr); letters.height = Math.round(H * dpr);
+    const c = lctx;
+    c.setTransform(dpr, 0, 0, dpr, 0, 0);
     const lines = W < 761 ? ['CARUS', 'BREST'] : ['CARUS BREST'];
-    const els = lines.map(l => { const t = document.createElementNS(NS, 'text'); t.textContent = l; t.setAttribute('text-anchor', 'middle'); t.setAttribute('font-size', 100); word.appendChild(t); return t; });
-    const maxW = Math.max(...els.map(t => t.getComputedTextLength()));
+    const setFont = s => { c.font = `900 ${s}px Unbounded, sans-serif`; if ('letterSpacing' in c) c.letterSpacing = `${-0.02 * s}px`; };
+    setFont(100);
+    const maxW = Math.max(...lines.map(l => c.measureText(l).width));
     const fs = 100 * (W * (W < 761 ? 0.9 : 0.93)) / maxW;
     const lh = fs * 0.9, total = lh * lines.length;
     const cy = H * (W < 761 ? 0.36 : 0.38);
-    els.forEach((t, i) => {
-      t.setAttribute('font-size', fs);
-      t.setAttribute('x', W / 2);
-      t.setAttribute('y', cy - total / 2 + lh * (i + 1) - fs * 0.1);
-    });
+    c.globalCompositeOperation = 'source-over'; c.fillStyle = concrete; c.fillRect(0, 0, W, H);
+    c.globalCompositeOperation = 'destination-out'; c.fillStyle = '#000'; c.textAlign = 'center'; c.textBaseline = 'alphabetic';
+    setFont(fs);
+    lines.forEach((l, i) => c.fillText(l, W / 2, cy - total / 2 + lh * (i + 1) - fs * 0.1));
+    c.globalCompositeOperation = 'source-over';
     const bottom = cy + (lines.length === 1 ? 0.35 : 0.8) * fs;
     const man = $('[data-manifest]');
     man.style.top = (bottom + (W < 761 ? 32 : 56)) + 'px';
@@ -173,7 +175,7 @@
   const globe = (() => {
     const cv = $('[data-globe]'); if (!cv) return null;
     const ctx = cv.getContext('2d');
-    let W = 0, H = 0, dpr = 1, dots = null;
+    let W = 0, H = 0, CY = 0, dpr = 1, dots = null;
     const st = { lon: -74, lat: 40.6, k: 6, ship: 0, land: 0 };
     const USA = [-74.05, 40.6], POTI = [41.65, 42.15], BREST = [23.73, 52.1];
     const WP = [USA, [-70, 40.2], [-60, 39.3], [-45, 38.2], [-30, 37.2], [-15, 36.3], [-8, 36], [-5.6, 35.95], [-2, 36.2], [3, 37.4], [8.5, 37.8], [11.3, 37.3], [15, 35.9], [20, 35.6], [23.8, 36.4], [25.6, 37.9], [26.1, 39.6], [26.5, 40.25], [28.3, 40.75], [29.05, 41.1], [29.4, 41.35], [31.5, 42.2], [36, 42.5], [40, 42.4], POTI];
@@ -197,9 +199,18 @@
       const l = (lon - st.lon) * RAD, p = lat * RAD, p0 = st.lat * RAD, r = R();
       const cl = Math.cos(l), cp = Math.cos(p), sp = Math.sin(p);
       const c = Math.sin(p0) * sp + Math.cos(p0) * cp * cl;
-      return [W / 2 + r * cp * Math.sin(l), H * 0.54 - r * (Math.cos(p0) * sp - Math.sin(p0) * cp * cl), c];
+      return [W / 2 + r * cp * Math.sin(l), CY - r * (Math.cos(p0) * sp - Math.sin(p0) * cp * cl), c];
     };
-    const size = () => { dpr = Math.min(1.5, devicePixelRatio || 1); W = cv.clientWidth; H = cv.clientHeight; cv.width = W * dpr; cv.height = H * dpr; draw(); };
+    const jh = $('[data-jhead]');
+    const size = () => {
+      dpr = Math.min(1.5, devicePixelRatio || 1); W = cv.clientWidth; H = cv.clientHeight; cv.width = W * dpr; cv.height = H * dpr;
+      /* на низком или узком экране (в т.ч. при увеличенном тексте) заголовок доходит до центра глобуса —
+         тогда опускаем глобус, чтобы метки США и Поти не наезжали на текст */
+      const r1 = Math.min(W, H) * (W < 761 ? 0.46 : 0.4);
+      CY = H * 0.54;
+      if (jh && jh.offsetLeft + jh.offsetWidth > W / 2 - r1 * 0.5) CY = Math.min(H - r1 * 0.5, Math.max(CY, jh.offsetTop + jh.offsetHeight + r1 * 0.3 + 24));
+      draw();
+    };
     const line = (pts, from, to, style, width, dash) => {
       ctx.save(); ctx.strokeStyle = style; ctx.lineWidth = width; ctx.setLineDash(dash || []); ctx.lineCap = 'round';
       ctx.beginPath(); let pen = false;
@@ -218,7 +229,7 @@
     function draw() {
       if (!W) return;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H);
-      const r = R(), cx = W / 2, cy = H * 0.54;
+      const r = R(), cx = W / 2, cy = CY;
       const g = ctx.createRadialGradient(cx - r * .3, cy - r * .35, r * .1, cx, cy, r);
       g.addColorStop(0, '#20232a'); g.addColorStop(1, '#0e0f12');
       ctx.fillStyle = g; ctx.beginPath(); ctx.arc(cx, cy, r, 0, 7); ctx.fill();
@@ -260,6 +271,7 @@
     }).catch(() => {});
     // закреплённый ScrollTrigger меняет размер холста уже после resize окна — следим за самим холстом
     if ('ResizeObserver' in window) new ResizeObserver(size).observe(cv); else addEventListener('resize', size);
+    document.fonts && document.fonts.ready.then(size);
     size();
     return { st, draw, proj, at, route, USA, POTI };
   })();
@@ -439,34 +451,45 @@
   addEventListener('load', () => setTimeout(() => idle(warmFront), 1200), { once: true });
   let center = buildLetters();
   const zoom = { s: 9 };
-  /* зум — CSS-трансформом всего svg: его масштабирует видеокарта, маска не перерисовывается на каждом кадре */
-  const setZoom = () => { svg.style.transformOrigin = `${center.cx}px ${center.cy}px`; svg.style.transform = `scale(${zoom.s})`; };
+  const setZoom = () => { letters.style.transformOrigin = `${center.cx}px ${center.cy}px`; letters.style.transform = `scale(${zoom.s})`; };
   setZoom();
   const media = $('[data-media]');
-  const bandH = () => center.fs * center.band;
+  const bandH = () => center.fs * center.band, bandTop = () => center.cy - bandH() / 2;
+  /* телефон: блок с видео сразу стоит на месте полосы букв, а большое начальное положение задаёт трансформ.
+     Видео в обоих положениях упирается в высоту блока, поэтому картинка та же, что при растягивании блока,
+     но размер видео не меняется на каждом кадре — на iPhone именно это давало рывки */
+  const mobMedia = !desktop.matches;
+  const fitMedia = () => { if (mobMedia) { media.style.top = bandTop() + 'px'; media.style.height = bandH() + 'px'; } };
+  fitMedia();
   const stageTl = gsap.timeline({
     defaults: { ease: 'none' },
-    scrollTrigger: { trigger: '.stage', start: 'top top', end: () => '+=' + innerHeight * (desktop.matches ? 0.9 : 0.7), pin: true, scrub: .6, invalidateOnRefresh: true,
-      onRefreshInit: () => { center = buildLetters(); setZoom(); },
+    /* блок держит CSS sticky (см. .stage в стилях), а не пин GSAP: при нативном скролле телефона пин
+       догоняет страницу на кадр позже и дёргается, sticky держит сам браузер */
+    scrollTrigger: { trigger: '.stage', start: 'top top', end: 'bottom bottom', scrub: .6, invalidateOnRefresh: true,
+      onRefreshInit: () => { center = buildLetters(); setZoom(); fitMedia(); },
       onEnter: () => { warmFront(); fv.isConnected && fv.play().catch(() => {}); } }
   });
   stageTl
     .to('.hero', { autoAlpha: 0, y: -60, duration: .24 }, 0)
     .to('.stage__shade', { opacity: 0, duration: .26 }, .04)
-    .fromTo(svg, { opacity: 0 }, { opacity: 1, duration: .26 }, .1)
-    .fromTo(zoom, { s: 9 }, { s: 1, duration: .66, ease: 'power2.inOut', onUpdate: setZoom }, .1)
-    .fromTo(media, { top: 0, height: () => desktop.matches ? center.H : center.H * .62 },
-      { top: () => center.cy - bandH() / 2, height: bandH, duration: .3, ease: 'power2.inOut' }, .46)
+    .fromTo(letters, { opacity: 0 }, { opacity: 1, duration: .26 }, .1)
+    .fromTo(zoom, { s: 9 }, { s: 1, duration: .66, ease: 'power2.inOut', onUpdate: setZoom }, .1);
+  if (mobMedia) stageTl.fromTo(media, { y: () => -bandTop(), scale: () => center.H * .62 / bandH(), transformOrigin: '50% 0' },
+    { y: 0, scale: 1, duration: .3, ease: 'power2.inOut' }, .46);
+  else stageTl.fromTo(media, { top: 0, height: () => center.H }, { top: bandTop, height: bandH, duration: .3, ease: 'power2.inOut' }, .46);
+  stageTl
     .fromTo('.manifest', { autoAlpha: 0, y: 24 }, { autoAlpha: 1, y: 0, duration: .14 }, .74)
     .to({}, { duration: .1 });
   if (fv.isConnected) stageTl.to(fv, { opacity: 1, duration: .2 }, .14);
-  /* при ресайзе во время пина буквы собираются по старому размеру блока — когда размер устоится, пересобираем */
+  /* буквы пересобираются, когда размер блока устоится */
   if ('ResizeObserver' in window) {
     let rt = 0;
     new ResizeObserver(() => { clearTimeout(rt); rt = setTimeout(() => {
-      if (Math.abs(svg.clientWidth - center.W) > 1 || Math.abs(svg.clientHeight - center.H) > 1) ScrollTrigger.refresh();
-    }, 250); }).observe(svg);
+      if (Math.abs(letters.clientWidth - center.W) > 1 || Math.abs(letters.clientHeight - center.H) > 1) ScrollTrigger.refresh();
+    }, 250); }).observe(letters);
   }
+  /* холст рисуется шрифтом Unbounded 900 — дорисовываем, как только он загрузится */
+  document.fonts && document.fonts.load('900 100px Unbounded').then(() => ScrollTrigger.refresh()).catch(() => {});
 
   /* бегущая строка: скорость и направление от скролла */
   const track = $('[data-ticker]');
@@ -522,11 +545,13 @@
         const t = +l.dataset.jlabel, v = st.ship >= t ? 1 - seg(st.ship, t + .1, t + .16) : 0;
         const pt = globe.at(globe.route, t), s = globe.proj(pt[0], pt[1]);
         const half = (lw[k] || 0) / 2 + 8;
-        l.style.opacity = s[2] > 0 ? v : 0; l.style.left = Math.min(innerWidth - half, Math.max(half, s[0])) + 'px'; l.style.top = s[1] + 'px';
+        l.style.opacity = s[2] > 0 ? v : 0;
+        l.style.transform = `translate(${Math.min(innerWidth - half, Math.max(half, s[0]))}px,${s[1]}px) translate(-50%,${l.classList.contains('is-below') ? '70%' : '-160%'})`;
       });
     };
+    /* закреплён CSS sticky, длина прогона — высотой .journey в стилях */
     ScrollTrigger.create({
-      trigger: '[data-journey]', start: 'top top', end: () => '+=' + innerHeight * (desktop.matches ? 4.6 : 4), pin: true, scrub: true,
+      trigger: '.journey', start: 'top top', end: 'bottom bottom', scrub: true,
       onUpdate: self => { P = self.progress; if (!raf) raf = requestAnimationFrame(render); },
       onRefresh: self => { P = self.progress; render(); }
     });
@@ -540,7 +565,7 @@
     const strip = car.parentNode;
     gsap.timeline({ scrollTrigger: { trigger: roadSec, start: 'top 55%', end: 'bottom 60%', scrub: .4, invalidateOnRefresh: true } })
       .fromTo(mids, { scaleY: 0 }, { scaleY: 1, ease: 'none' }, 0)
-      .fromTo(car, { top: 70 }, { top: () => strip.offsetHeight - car.offsetHeight, ease: 'none' }, 0);
+      .fromTo(car, { y: 70 }, { y: () => strip.offsetHeight - car.offsetHeight, ease: 'none' }, 0);
     $$('.stop', roadSec).forEach(s => gsap.from(s, { x: s.classList.contains('stop--r') ? 60 : -60, opacity: 0, duration: .8, ease,
       scrollTrigger: { trigger: s, start: 'top 72%' } }));
   }
@@ -569,9 +594,20 @@
       gateOwn.classList.toggle('is-hit', fx > xAt(.42));
       stamp.classList.toggle('is-on', p > .84); note.style.opacity = p > .84 ? 1 : 0;
     };
-    /* блок встаёт по центру экрана, пока идёт заезд, — финиш и «Ключи у вас» видно целиком */
-    ScrollTrigger.create({ trigger: drag, start: () => innerHeight < drag.offsetHeight + 120 ? 'top 80px' : 'center center', end: () => '+=' + innerHeight * .9,
-      pin: true, scrub: .5, invalidateOnRefresh: true,
+    /* блок встаёт по центру экрана, пока идёт заезд, — финиш и «Ключи у вас» видно целиком.
+       Держит его CSS sticky внутри обёртки: обёртка выше блока ровно на длину заезда */
+    const run = $('[data-drag-run]');
+    let dt = 80;
+    const sizeDrag = () => {
+      /* центр считаем между шапкой и нижней панелью телефона, а не по всему экрану */
+      const h = drag.offsetHeight, hd = top.offsetHeight, ft = desktop.matches ? 0 : 84;
+      dt = hd + Math.max(8, (innerHeight - hd - ft - h) / 2);
+      drag.style.top = dt + 'px'; run.style.height = h + innerHeight * .9 + 'px';
+    };
+    sizeDrag();
+    ScrollTrigger.addEventListener('refreshInit', sizeDrag);
+    ScrollTrigger.create({ trigger: run, start: () => 'top ' + dt, end: () => 'bottom ' + (dt + drag.offsetHeight),
+      scrub: .5, invalidateOnRefresh: true,
       onUpdate: s => upd(s.progress), onRefresh: s => upd(s.progress) });
     ScrollTrigger.create({ trigger: drag, start: 'top 80%', once: true, onEnter: () => {
       const tl = gsap.timeline();
